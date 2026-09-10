@@ -66,7 +66,7 @@ hubiera tocado.
 
 ---
 
-## Los tres pasos en cada aplicación
+## Los cuatro pasos en cada aplicación
 
 ### 1. Transpilarlo
 
@@ -118,7 +118,27 @@ Las clases van ademas con `:where()`, que tiene especificidad CERO: una
 aplicacion puede redefinir `.text-body` a su manera sin pelear con nada ni
 recurrir a `!important`.
 
-### 3. Montar los proveedores
+### 3. Si la aplicacion va en Docker: git y HTTPS
+
+El paquete no viene de npm, viene de GitHub. La imagen de node no trae `git`, y
+npm falla con `spawn git ENOENT` —que no dice en ningun sitio que lo que falta
+sea git—. Ademas hay que forzar HTTPS:
+
+```dockerfile
+RUN apk add --no-cache git
+
+# npm reescribe la URL a git+ssh:// cuando quien hace `npm install` tiene llave
+# de GitHub (un portatil), y eso queda escrito en el package-lock. Dentro del
+# build no hay llave, y ssh SIEMPRE pide una aunque el repositorio sea publico.
+RUN git config --global url."https://github.com/".insteadOf "git@github.com:" \
+ && git config --global url."https://github.com/".insteadOf "git+ssh://git@github.com/" \
+ && git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+```
+
+Va ANTES del `npm install`. El repositorio del paquete es publico justamente
+para que esto funcione sin credenciales ni secretos que rotar.
+
+### 4. Montar los proveedores
 
 Reciben lo que el paquete no puede saber:
 
@@ -263,4 +283,6 @@ La etiqueta es lo que hace que cada aplicación cambie **cuando tú decides**.
 | El menú sale vacío | El portal no responde: `curl localhost:3001/api/modules`. |
 | «Mi perfil» rebota al acceso | Falta el token en `perfilHref`: usa `withSessionToken()`. |
 | Cambio algo aquí y la aplicación no se entera | Sigue con la etiqueta antigua. Etiqueta y reinstala. |
+| `spawn git ENOENT` al construir en Docker | Falta `apk add git` en el Dockerfile (paso 3). |
+| `Permission denied (publickey)` al construir | El lock trae `git+ssh://` y dentro del build no hay llave. Fuerza HTTPS con los `git config` del paso 3. |
 | Los colores del paquete pisan a los míos | `theme.css` se importa ANTES que `@dosxdos/ui/styles.css`. Va después. |
