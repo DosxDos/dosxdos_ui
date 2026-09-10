@@ -169,19 +169,37 @@ pantalla se quedará vacía sin que nada falle por ninguna parte.
 ## Publicar un cambio
 
 ```bash
-# 1. aquí: cambiar, subir la versión en package.json, etiquetar
-git commit -am "..."
-git tag v0.2.0
-git push --tags
-
-# 2. en cada aplicación que lo use
-npm install github:DosxDos/dosxdos_ui#v0.2.0
+git commit -am "lo que sea"
+node publicar.mjs 0.3.0
 ```
 
-Ese segundo paso es el precio de compartir de verdad: hasta que no se actualiza,
-cada aplicación sigue con la versión que tenía. Es a propósito —nadie cambia de
-menú por sorpresa— pero hay que acordarse, y es más trabajo que copiar un
-fichero. Con tres aplicaciones compensa porque ya se habían desincronizado.
+El script sube la versión, etiqueta, empuja, y hace el `npm install` en las
+aplicaciones que estén como carpetas hermanas y ya usen el paquete. Las que no
+estén, las salta.
+
+**No despliega nada.** Deja los cambios en el árbol de cada aplicación para que
+se miren y se prueben antes de commitear. Un menú no debería llegar a producción
+sin que nadie lo haya visto.
+
+Se niega a publicar con cambios sin guardar —una etiqueta que no corresponde a
+ningún commit es imposible de rastrear después— y a reutilizar una etiqueta que
+ya existe, porque entonces dos aplicaciones con la misma versión tendrían código
+distinto.
+
+### ¿Y por qué no se actualiza solo?
+
+Se puede: basta con apuntar a la rama en vez de a una etiqueta.
+
+```json
+"@dosxdos/ui": "github:DosxDos/dosxdos_ui#main"
+```
+
+**No lo hagas.** El despliegue hace `docker compose build`, que reinstala las
+dependencias: desplegar logística se llevaría a producción lo último que
+hubiera en el paquete, terminado o no. Un menú cambiando en producción porque
+alguien desplegó otra aplicación es una tarde perdida.
+
+La etiqueta es lo que hace que cada aplicación cambie **cuando tú decides**.
 
 ---
 
