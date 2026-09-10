@@ -12,6 +12,7 @@ export { Footer } from "./components/Footer";
 
 // Piezas sueltas que los modulos tambien usan
 export { ModuleIcon } from "./components/ModuleIcon";
+export { RemoteIcon } from "./components/RemoteIcon";
 export { TransitionLink } from "./components/TransitionLink";
 export * from "./components/Icons";
 
@@ -34,8 +35,19 @@ export { decodeToken, toAuthenticatedUser, isExpired } from "./utils/auth/jwt";
 
 // Ayudas de presentacion
 export { visibleApps, displayName, initials } from "./utils/apps";
-export { groupByCategory, shouldLabelGroups } from "./utils/categories";
+export {
+  groupByCategory,
+  shouldLabelGroups,
+  conFavoritosDelante,
+  FAVOURITES_KEY,
+} from "./utils/categories";
+export type { AppGroup } from "./utils/categories";
 export { LEGAL_LINKS } from "./constants/legal";
+export {
+  DEFAULT_CATEGORY,
+  CATEGORY_LABELS,
+  CATEGORY_ORDER,
+} from "./constants/categories";
 
 // Tipos
 export type { PortalApp } from "./types/app";
