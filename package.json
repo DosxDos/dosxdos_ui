@@ -1,6 +1,6 @@
 {
   "name": "@dosxdos/ui",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "description": "Componentes compartidos entre los modulos de Dos por Dos.",
   "type": "module",
