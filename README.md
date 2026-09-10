@@ -93,11 +93,17 @@ se ha roto el CSS entero—:
 ```css
 @import "tailwindcss";
 
-@source "../node_modules/@dosxdos/ui/src";
+@source "./node_modules/@dosxdos/ui/src";
 @import "@dosxdos/ui/styles.css";
 
 @import "./styles/theme.css";   /* los tuyos, DESPUES */
 ```
+
+**La ruta del `@source` es relativa al fichero CSS**, y `globals.css` esta en la
+raiz del proyecto: es `./node_modules`, no `../node_modules`. Con la de mas se
+apunta fuera del proyecto, a una carpeta que no existe —y Tailwind no dice
+nada—: escanea cero ficheros, purga todas las clases del paquete y los
+componentes salen con el HTML correcto y sin un solo estilo. Paso.
 
 `@dosxdos/ui/styles.css` trae los colores de la marca y las clases que usan sus
 componentes (`.text-body`, `.text-label`, `.keyboard-focus-ring`, `.sr-only`),
@@ -252,7 +258,7 @@ La etiqueta es lo que hace que cada aplicación cambie **cuando tú decides**.
 | Síntoma | Casi siempre es |
 |---|---|
 | `Module not found: Can't resolve '@dosxdos/ui'` | Instalado con `file:` o `npm link`: es un symlink y Turbopack no lo resuelve. Instálalo desde GitHub. |
-| El menú sale sin estilos | Falta el `@source` o el `@import "@dosxdos/ui/styles.css"` en `globals.css`. |
+| El menú sale sin estilos | Falta el `@source`, o apunta mal: es `./node_modules`, relativo a `globals.css`. Tailwind no avisa, simplemente no escanea nada. |
 | `useSession necesita estar dentro de SessionProvider` | Un componente lee el contexto local y el proveedor es el del paquete (o al revés). Reexporta, no dupliques. |
 | El menú sale vacío | El portal no responde: `curl localhost:3001/api/modules`. |
 | «Mi perfil» rebota al acceso | Falta el token en `perfilHref`: usa `withSessionToken()`. |
