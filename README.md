@@ -68,3 +68,4 @@ npm install github:DosxDos/dosxdos_ui#v0.2.0
 Ese segundo paso es el precio de compartir de verdad: hasta que no se actualiza,
 cada aplicacion sigue con la version que tenia. Es a proposito —nadie cambia de
 menu por sorpresa— pero hay que acordarse.
+# dosxdos_ui
