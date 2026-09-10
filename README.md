@@ -67,15 +67,33 @@ Es a propósito: publicarlo compilado obliga a un paso de build y a versionar
 artefactos, y para tres aplicaciones que comparten cuatro componentes no
 compensa. El precio es esta línea.
 
-### 2. Que Tailwind mire dentro
+### 2. Que Tailwind mire dentro, y traerse los estilos
 
-Sin esto los componentes llegan con el HTML correcto y **ninguna regla que los
-pinte** —un menú sin estilos, que parece que se ha roto el CSS entero—:
+Dos lineas en `globals.css`. Sin la primera los componentes llegan con el HTML
+correcto y **ninguna regla que los pinte** —un menu sin estilos, que parece que
+se ha roto el CSS entero—:
 
 ```css
-/* globals.css, justo detrás de @import "tailwindcss" */
+@import "tailwindcss";
+
 @source "../node_modules/@dosxdos/ui/src";
+@import "@dosxdos/ui/styles.css";
+
+@import "./styles/theme.css";   /* los tuyos, DESPUES */
 ```
+
+`@dosxdos/ui/styles.css` trae los colores de la marca y las clases que usan sus
+componentes (`.text-body`, `.text-label`, `.keyboard-focus-ring`, `.sr-only`),
+para que el paquete se pinte aunque la aplicacion no haya definido nada.
+
+**El orden importa y es todo el truco:** lo del paquete va primero y lo de la
+aplicacion despues, asi que si un modulo define sus propios colores, ganan los
+suyos por llegar los ultimos. Comprobado: con el paquete puesto en rojo y el
+portal en berenjena, el CSS compilado sale berenjena.
+
+Las clases van ademas con `:where()`, que tiene especificidad CERO: una
+aplicacion puede redefinir `.text-body` a su manera sin pelear con nada ni
+recurrir a `!important`.
 
 ### 3. Montar los proveedores
 
@@ -99,31 +117,12 @@ origen (`/api/modules`), y ese route handler se lo pide por dentro al portal.
 Ese rodeo evita CORS: el portal no lleva lista de orígenes permitidos y un
 módulo nuevo no obliga a redesplegarlo.
 
-### Lo que el paquete da por hecho
+### Lo que ya no hace falta
 
-No trae estilos propios: usa los tokens de la aplicación, para que el menú sea
-del mismo color que el resto de la pantalla en cada módulo. Eso significa que la
-aplicación **tiene que definirlos**, o los componentes salen con el HTML bien y
-los colores en blanco y negro.
-
-En `styles/theme.css`, dentro del bloque `@theme`:
-
-```
---color-primary      el color de marca: texto, iconos, el fondo de la cabecera
---color-secondary    el fondo claro sobre el que va todo
-```
-
-En `styles/base.css`:
-
-```
-.keyboard-focus-ring   el anillo de foco, solo con teclado
-.text-body             el tamaño de texto normal
-.text-label            la etiqueta pequeña en mayúsculas
-.sr-only               lo que solo leen los lectores de pantalla
-```
-
-Cualquier módulo copiado de logística ya los tiene todos: la lista está aquí
-para el día que alguien empiece uno de cero.
+Antes esto pedia que la aplicacion definiera ciertos tokens y clases, y si
+faltaba alguno el menu salia sin pintar sin que nada lo dijera. Ya no: van en
+`@dosxdos/ui/styles.css` con valores de respaldo. Definir los tuyos sigue
+siendo lo normal —y siguen ganando—, pero ahora es una opcion, no un requisito.
 
 ---
 
@@ -203,8 +202,9 @@ fichero. Con tres aplicaciones compensa porque ya se habían desincronizado.
 | Síntoma | Casi siempre es |
 |---|---|
 | `Module not found: Can't resolve '@dosxdos/ui'` | Instalado con `file:` o `npm link`: es un symlink y Turbopack no lo resuelve. Instálalo desde GitHub. |
-| El menú sale sin estilos | Falta el `@source` en `globals.css`. |
+| El menú sale sin estilos | Falta el `@source` o el `@import "@dosxdos/ui/styles.css"` en `globals.css`. |
 | `useSession necesita estar dentro de SessionProvider` | Un componente lee el contexto local y el proveedor es el del paquete (o al revés). Reexporta, no dupliques. |
 | El menú sale vacío | El portal no responde: `curl localhost:3001/api/modules`. |
 | «Mi perfil» rebota al acceso | Falta el token en `perfilHref`: usa `withSessionToken()`. |
 | Cambio algo aquí y la aplicación no se entera | Sigue con la etiqueta antigua. Etiqueta y reinstala. |
+| Los colores del paquete pisan a los míos | `theme.css` se importa ANTES que `@dosxdos/ui/styles.css`. Va después. |

@@ -1,0 +1,84 @@
+/* ===========================================================================
+   @dosxdos/ui — lo que los componentes necesitan para pintarse
+
+   Importalo en el globals.css de la aplicacion, DETRAS de tailwindcss y DELANTE
+   de los estilos propios:
+
+     @import "tailwindcss";
+     @import "@dosxdos/ui/styles.css";
+     @import "./styles/theme.css";     <- los tuyos ganan, van despues
+
+   Existe para que el paquete no dependa de que la aplicacion haya definido
+   ciertos tokens. Antes esa era una condicion escrita solo en el README: si
+   faltaba alguno, el menu salia con el HTML correcto y sin pintar, y no habia
+   nada que dijera por que.
+   =========================================================================== */
+
+/* --- Tokens ---------------------------------------------------------------
+   Los colores de la marca, para que el paquete se pinte aunque la aplicacion
+   no haya definido nada.
+
+   Quien quiera otros NO tiene que pelear con esto: basta con importar su
+   `theme.css` DESPUES —el orden del final del fichero— y sus valores ganan por
+   ser los ultimos en llegar. Por eso van con el valor puesto y no envueltos en
+   `var(--color-primary, …)`: una propiedad personalizada NO puede referirse a
+   si misma, se probo y resuelve a nada, dejando el texto en negro. */
+
+@theme {
+  --color-primary: #281528;
+  --color-primary-hover: #3a1f3a;
+  --color-secondary: #e8edec;
+  --color-paper: #ffffff;
+  --color-ink: #281528;
+  --color-activo: #10b981;
+}
+
+/* --- Texto ----------------------------------------------------------------
+   Las tres clases que usan los componentes. Se definen con `:where()`, que
+   tiene especificidad CERO: si la aplicacion declara `.text-body` a su manera,
+   la suya gana sin tener que pelear ni marcar nada como `!important`. */
+
+:where(.text-body) {
+  font-size: var(--text-base, 1rem);
+  line-height: var(--leading-normal, 1.6);
+}
+
+:where(.text-label) {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  letter-spacing: var(--tracking-widest, 0.15em);
+  text-transform: uppercase;
+}
+
+/* --- Foco de teclado ------------------------------------------------------
+   El anillo aparece SOLO navegando con el teclado. La modalidad la marca
+   `InputModalityTracker` en el <html> de la aplicacion; si no esta montado,
+   este bloque simplemente no llega a aplicarse nunca y el foco queda con el
+   contorno del navegador, que es el comportamiento seguro.
+
+   Nunca `outline: none` a secas: quita la navegacion por teclado a todo el
+   mundo, que es justo el fallo que esta clase existe para evitar. */
+
+:where(.keyboard-focus-ring):focus {
+  outline: none;
+}
+
+[data-input-modality="keyboard"] :where(.keyboard-focus-ring):focus {
+  outline: 2px solid var(--color-primary, #281528);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm, 4px);
+}
+
+/* --- Solo para lectores de pantalla --------------------------------------- */
+
+:where(.sr-only) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
