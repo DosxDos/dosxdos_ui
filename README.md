@@ -12,7 +12,7 @@
 > node publicar.mjs 0.4.0        # <- sube el número
 > ```
 >
-> Eso etiqueta, empuja y reinstala en las tres aplicaciones. Luego revisa el
+> Eso etiqueta, empuja y reinstala en todas las aplicaciones. Luego revisa el
 > `package.json` que ha cambiado en cada una y haz commit allí.
 >
 > **Si no lo haces, tu cambio existe solo en este repositorio y en tu cabeza.**
@@ -51,7 +51,7 @@ mover un fichero aquí dentro sin romper a nadie.
 ## Instalar
 
 ```bash
-npm install github:DosxDos/dosxdos_ui#v0.1.0
+npm install github:DosxDos/dosxdos_ui#v0.4.0
 ```
 
 Se fija una **etiqueta**, no una rama. Con `#main`, cualquier `npm install` se
