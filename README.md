@@ -99,6 +99,32 @@ origen (`/api/modules`), y ese route handler se lo pide por dentro al portal.
 Ese rodeo evita CORS: el portal no lleva lista de orígenes permitidos y un
 módulo nuevo no obliga a redesplegarlo.
 
+### Lo que el paquete da por hecho
+
+No trae estilos propios: usa los tokens de la aplicación, para que el menú sea
+del mismo color que el resto de la pantalla en cada módulo. Eso significa que la
+aplicación **tiene que definirlos**, o los componentes salen con el HTML bien y
+los colores en blanco y negro.
+
+En `styles/theme.css`, dentro del bloque `@theme`:
+
+```
+--color-primary      el color de marca: texto, iconos, el fondo de la cabecera
+--color-secondary    el fondo claro sobre el que va todo
+```
+
+En `styles/base.css`:
+
+```
+.keyboard-focus-ring   el anillo de foco, solo con teclado
+.text-body             el tamaño de texto normal
+.text-label            la etiqueta pequeña en mayúsculas
+.sr-only               lo que solo leen los lectores de pantalla
+```
+
+Cualquier módulo copiado de logística ya los tiene todos: la lista está aquí
+para el día que alguien empiece uno de cero.
+
 ---
 
 ## El menú de usuario y la URL del perfil
