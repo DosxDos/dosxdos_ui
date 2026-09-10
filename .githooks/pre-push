@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+# Avisa de que un push a secas no cambia nada en las aplicaciones.
+#
+# Es el unico momento en que se puede decir: quien empuja cree que ya ha
+# terminado. El README lo explica, pero para leerlo hay que abrirlo, y nadie
+# abre el README del paquete que acaba de tocar.
+#
+# No bloquea nunca: solo imprime. Si el push lleva etiquetas viene de
+# publicar.mjs, ya esta todo hecho, y se calla.
+
+for arg in "$@"; do
+  case "$arg" in
+    *--tags*) exit 0 ;;
+  esac
+done
+
+# ¿Se estan empujando etiquetas por stdin? (git manda las refs por ahi)
+if grep -q "refs/tags/" /dev/stdin 2>/dev/null; then
+  exit 0
+fi
+
+cat <<'AVISO'
+
+  ─────────────────────────────────────────────────────────────────────
+   Esto NO actualiza ninguna aplicacion.
+
+   Cada una esta clavada a una etiqueta y seguira con la que tenia.
+   Para que el cambio llegue a alguna parte:
+
+       node publicar.mjs 0.4.0      (sube el numero)
+
+   Y despues, commit del package.json en cada aplicacion.
+  ─────────────────────────────────────────────────────────────────────
+
+AVISO
+exit 0

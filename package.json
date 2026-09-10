@@ -29,5 +29,9 @@
     "typescript": "^7.0.2"
   },
   "main": "./src/index.ts",
-  "types": "./src/index.ts"
+  "types": "./src/index.ts",
+  "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
+    "publicar": "node publicar.mjs"
+  }
 }

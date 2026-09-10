@@ -1,5 +1,5 @@
 import { execSync } from "child_process";
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
@@ -19,8 +19,34 @@ import { fileURLToPath } from "url";
  */
 const AQUI = dirname(fileURLToPath(import.meta.url));
 
-/** Las aplicaciones que usan el paquete, como carpetas hermanas de esta. */
-const APLICACIONES = ["dosxdos_portal", "dosxdos_logistica", "dosxdos_auth"];
+/**
+ * Las aplicaciones se BUSCAN, no se escriben aqui.
+ *
+ * Una lista a mano es una cosa mas que actualizar al crear un modulo, y la que
+ * nadie recuerda: el modulo nuevo se quedaria con la version vieja del menu sin
+ * que nada avisara. Se mira en las carpetas hermanas y se coge a quien tenga
+ * `@dosxdos/ui` entre sus dependencias, que es la definicion exacta de "esto
+ * hay que actualizarlo".
+ */
+function buscarAplicaciones() {
+  const raiz = resolve(AQUI, "..");
+
+  return readdirSync(raiz, { withFileTypes: true })
+    .filter((entrada) => entrada.isDirectory() && entrada.name !== "dosxdos_ui")
+    .map((entrada) => resolve(raiz, entrada.name))
+    .filter((ruta) => {
+      const manifiesto = resolve(ruta, "package.json");
+      if (!existsSync(manifiesto)) return false;
+
+      try {
+        const paquete = JSON.parse(readFileSync(manifiesto, "utf8"));
+        return Boolean(paquete.dependencies?.["@dosxdos/ui"]);
+      } catch {
+        // Un package.json ilegible no es asunto de este script.
+        return false;
+      }
+    });
+}
 
 const version = process.argv[2];
 
@@ -65,31 +91,35 @@ console.log(`· publicado ${etiqueta}`);
 
 // 2. Y a cada aplicacion que este al lado.
 const destino = `github:DosxDos/dosxdos_ui#${etiqueta}`;
+const aplicaciones = buscarAplicaciones();
 
-for (const app of APLICACIONES) {
-  const ruta = resolve(AQUI, "..", app);
-
-  if (!existsSync(ruta)) {
-    console.log(`· ${app}: no esta aqui al lado, se salta`);
-    continue;
-  }
-
-  const suPaquete = JSON.parse(
-    readFileSync(resolve(ruta, "package.json"), "utf8")
+if (aplicaciones.length === 0) {
+  console.log(
+    "· ninguna aplicacion al lado usa el paquete todavia, no hay nada que actualizar"
   );
-  if (!suPaquete.dependencies?.["@dosxdos/ui"]) {
-    console.log(`· ${app}: todavia no usa el paquete, se salta`);
-    continue;
-  }
+}
+
+const fallos = [];
+
+for (const ruta of aplicaciones) {
+  const nombre = ruta.split("/").pop();
 
   try {
     sh(`npm install ${destino}`, ruta);
-    console.log(`· ${app}: actualizado`);
+    console.log(`· ${nombre}: actualizado`);
   } catch (error) {
-    console.error(`· ${app}: FALLO -> ${error.message.split("\n")[0]}`);
+    fallos.push(nombre);
+    console.error(`· ${nombre}: FALLO -> ${error.message.split("\n")[0]}`);
   }
 }
 
 console.log(`
 Listo. En cada aplicacion han cambiado package.json y package-lock.json.
 Miralas, pruebalas y haz commit cuando estes conforme.`);
+
+// Salir con error si alguna se quedo atras: una aplicacion con la version
+// vieja y sin avisar es justo lo que este script existe para evitar.
+if (fallos.length > 0) {
+  console.error(`\nSe quedaron sin actualizar: ${fallos.join(", ")}`);
+  process.exit(1);
+}

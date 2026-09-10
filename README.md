@@ -1,5 +1,22 @@
 # @dosxdos/ui
 
+> # ⚠️ ¿Has tocado algo aquí?
+>
+> **`git push` NO cambia nada en ninguna aplicación.** Cada una está clavada a
+> una etiqueta y seguirá con la que tenía hasta que alguien la actualice.
+>
+> Para que tu cambio llegue a alguna parte:
+>
+> ```bash
+> git commit -am "lo que sea"
+> node publicar.mjs 0.4.0        # <- sube el número
+> ```
+>
+> Eso etiqueta, empuja y reinstala en las tres aplicaciones. Luego revisa el
+> `package.json` que ha cambiado en cada una y haz commit allí.
+>
+> **Si no lo haces, tu cambio existe solo en este repositorio y en tu cabeza.**
+
 Lo que comparten los módulos de Dos por Dos: la cabecera, el pie y la sesión.
 
 Existe para que un cambio en el menú se haga **una sola vez**. Antes estos
@@ -173,9 +190,24 @@ git commit -am "lo que sea"
 node publicar.mjs 0.3.0
 ```
 
-El script sube la versión, etiqueta, empuja, y hace el `npm install` en las
-aplicaciones que estén como carpetas hermanas y ya usen el paquete. Las que no
-estén, las salta.
+El script sube la versión, etiqueta, empuja, y hace el `npm install` en todas
+las aplicaciones.
+
+**No hay ninguna lista que mantener.** Busca en las carpetas hermanas de esta y
+actualiza a quien tenga `@dosxdos/ui` en sus dependencias. Un módulo nuevo entra
+solo en cuanto lo instala; uno que deje de usarlo se cae solo de la lista. Una
+lista escrita a mano sería una cosa más que actualizar al crear un módulo, y
+justo la que nadie recuerda.
+
+Requisito: que las aplicaciones estén como **carpetas hermanas** del paquete.
+
+```
+Desktop/dosxdos/
+  dosxdos_ui/          <- aqui
+  dosxdos_portal/
+  dosxdos_logistica/
+  dosxdos_tuapp/       <- entra solo
+```
 
 **No despliega nada.** Deja los cambios en el árbol de cada aplicación para que
 se miren y se prueben antes de commitear. Un menú no debería llegar a producción
