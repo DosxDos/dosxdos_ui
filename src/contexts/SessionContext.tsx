@@ -71,10 +71,22 @@ export function SessionProvider({
   const user = session?.user ?? null;
   const isResolving = session === null;
 
+  /**
+   * Cierra la sesion aqui y en el modulo de acceso.
+   *
+   * Desde el 17/09/2026 el modulo de acceso recuerda la sesion en su propio
+   * origen, para no pedir la contrasena cada vez que se salta de una aplicacion
+   * a otra. Eso tiene una consecuencia que hay que atender aqui: borrar solo el
+   * token de esta aplicacion ya no cierra nada. Al volver, el modulo reconoce su
+   * sesion y deja entrar otra vez, y el boton de cerrar sesion parece roto.
+   *
+   * Por eso se manda a `/salir` y no a la raiz: esa ruta borra la suya y enseña
+   * el formulario. La raiz haria justo lo contrario —reconocer y redirigir—.
+   */
   const signOut = useCallback(() => {
     clearToken();
     setSession({ user: null });
-    window.location.replace(authUrl);
+    window.location.replace(`${authUrl}/salir`);
   }, []);
 
   const value = useMemo(
