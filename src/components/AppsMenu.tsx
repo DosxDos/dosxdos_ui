@@ -7,7 +7,7 @@ import { useSession } from "../hooks/useSession";
 import { useModules } from "../hooks/useModules";
 import { IconClose, IconMenu } from "./Icons";
 import { ModuleIcon } from "./ModuleIcon";
-import { TransitionLink } from "./TransitionLink";
+import { useLinkComponent } from "../contexts/LinkContext";
 import { withSessionToken } from "../utils/auth/session";
 
 /**
@@ -22,6 +22,7 @@ import { withSessionToken } from "../utils/auth/session";
  * cerrarlo con el teclado.
  */
 export function AppsMenu() {
+  const Link = useLinkComponent();
   const { user } = useSession();
   const { modules } = useModules();
   const [isOpen, setIsOpen] = useState(false);
@@ -142,7 +143,7 @@ export function AppsMenu() {
 
                     return (
                       <li key={app.id}>
-                        <TransitionLink
+                        <Link
                           href={withSessionToken(app.url)}
                           onClick={() => setIsOpen(false)}
                           className="flex items-center gap-4 rounded-xl p-3 transition-colors hover:bg-primary/5 keyboard-focus-ring"
@@ -153,7 +154,7 @@ export function AppsMenu() {
                           <span className="min-w-0 truncate text-body font-medium text-primary">
                             {app.name}
                           </span>
-                        </TransitionLink>
+                        </Link>
                       </li>
                     );
                   })}

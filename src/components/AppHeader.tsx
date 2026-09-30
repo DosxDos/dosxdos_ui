@@ -78,12 +78,13 @@ function AppHeaderBase({ appName, perfilHref, portalUrl }: Props) {
               logo
             )}
 
-            {/* En movil se queda solo el logotipo: el nombre y la fecha no caben
-                junto a la pastilla. No es un h1: la barra sale en todas las
-                paginas y el h1 es el titulo de cada una. */}
-            <div className="hidden min-w-0 md:block">
+            {/* El nombre de la aplicacion SIEMPRE, tambien en movil: es lo que
+                dice en cual se esta. La fecha solo desde tablet, donde cabe. No
+                es un h1: la barra sale en todas las paginas y el h1 es el
+                titulo de cada una. */}
+            <div className="min-w-0">
               <p className="title-section truncate text-secondary">{appName}</p>
-              <p className="mt-1 text-body font-medium text-secondary">{todayLabel()}</p>
+              <p className="mt-1 hidden text-body font-medium text-secondary md:block">{todayLabel()}</p>
             </div>
           </div>
 

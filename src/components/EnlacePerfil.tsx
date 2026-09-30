@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { TransitionLink } from "./TransitionLink";
+import { useLinkComponent } from "../contexts/LinkContext";
 
 /**
  * El enlace al perfil, que no siempre es del mismo tipo.
@@ -26,13 +26,14 @@ export function EnlacePerfil({
   className?: string;
   children: ReactNode;
 }) {
+  const Link = useLinkComponent();
   const esInterno = href.startsWith("/");
 
   if (esInterno) {
     return (
-      <TransitionLink href={href} onClick={onClick} className={className}>
+      <Link href={href} onClick={onClick} className={className}>
         {children}
-      </TransitionLink>
+      </Link>
     );
   }
 

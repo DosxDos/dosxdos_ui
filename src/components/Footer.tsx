@@ -1,10 +1,11 @@
 "use client";
 
 import { LEGAL_LINKS } from "../constants/legal";
-import { TransitionLink } from "./TransitionLink";
+import { useLinkComponent } from "../contexts/LinkContext";
 
 /** El pie del portal: la firma y los enlaces legales. */
 export function Footer() {
+  const Link = useLinkComponent();
   return (
     <footer className="border-t border-primary/10 py-6" aria-label="Pie">
       <div className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center justify-between gap-4 px-5 md:px-10 lg:px-16">
@@ -12,13 +13,13 @@ export function Footer() {
 
         <nav className="flex flex-wrap gap-6" aria-label="Enlaces legales">
           {LEGAL_LINKS.map((link) => (
-            <TransitionLink
+            <Link
               key={link.href}
               href={link.href}
               className="text-body text-primary hover:underline keyboard-focus-ring"
             >
               {link.label}
-            </TransitionLink>
+            </Link>
           ))}
         </nav>
       </div>

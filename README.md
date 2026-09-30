@@ -17,7 +17,7 @@
 >
 > **Si no lo haces, tu cambio existe solo en este repositorio y en tu cabeza.**
 
-Lo que comparten los módulos de Dos por Dos: la cabecera, el pie y la sesión.
+Lo que comparten los módulos de Dos por Dos: la cabecera, el pie y la sesión. Funciona igual en Next y en Vite: nada de lo que exporta `@dosxdos/ui` importa Next; lo único de Next vive en `@dosxdos/ui/next`.
 
 Existe para que un cambio en el menú se haga **una sola vez**. Antes estos
 ficheros vivían copiados en cada repositorio, con la regla de acordarse de
@@ -37,7 +37,8 @@ subdominios— está `ARQUITECTURA.md`, en la raíz de cualquiera de los módulo
 | `AppsMenu` | El menú de aplicaciones. Se pinta con lo que sirve `/api/modules`. |
 | `UserMenu` | La cuenta: nombre, perfil y cerrar sesión. |
 | `Footer` | La firma y los enlaces legales. |
-| `TransitionLink` | Enlace interno. Sustituye a `next/link` en todo el código. |
+| `LinkProvider` | Le da al paquete el enlace de la aplicación para sus páginas internas. Sin él, un `<a>` normal. |
+| `@dosxdos/ui/next` → `TransitionLink` | Solo Next: el enlace con el router de Next. Se le pasa a `LinkProvider`. |
 | `Icons` | Los iconos del proyecto. Cambiar de librería es tocar un fichero. |
 | `ModuleIcon` / `RemoteIcon` | El icono de un módulo, que llega como SVG desde la base de datos. |
 | `SessionProvider` / `useSession` | Quién eres. Lee el token y redirige si no hay. |

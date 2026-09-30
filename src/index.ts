@@ -14,7 +14,6 @@ export { Footer } from "./components/Footer";
 // Piezas sueltas que los modulos tambien usan
 export { ModuleIcon } from "./components/ModuleIcon";
 export { RemoteIcon } from "./components/RemoteIcon";
-export { TransitionLink } from "./components/TransitionLink";
 export * from "./components/Icons";
 
 // La sesion y el catalogo
@@ -22,6 +21,8 @@ export { SessionProvider } from "./contexts/SessionContext";
 export { ModulesProvider } from "./contexts/ModulesContext";
 export { useSession } from "./hooks/useSession";
 export { useModules } from "./hooks/useModules";
+export { LinkProvider, useLinkComponent } from "./contexts/LinkContext";
+export type { LinkComponent } from "./contexts/LinkContext";
 
 // El token
 export {
