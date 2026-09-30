@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, type ReactNode } from "react";
 
 import { AppsMenu } from "./AppsMenu";
 import { UserMenu } from "./UserMenu";
@@ -20,6 +20,11 @@ interface Props {
    * omite.
    */
   portalUrl?: string;
+  /**
+   * La navegacion propia de la aplicacion (sus pestañas), debajo de la fila del
+   * logotipo y DENTRO de la barra, para que se quede fija con ella.
+   */
+  children?: ReactNode;
 }
 
 /**
@@ -35,7 +40,7 @@ interface Props {
  *
  * Los logotipos se leen de /assets/img/logos/ de cada aplicacion.
  */
-function AppHeaderBase({ appName, perfilHref, portalUrl }: Props) {
+function AppHeaderBase({ appName, perfilHref, portalUrl, children }: Props) {
   const { user } = useSession();
   if (!user) return null;
 
@@ -104,6 +109,7 @@ function AppHeaderBase({ appName, perfilHref, portalUrl }: Props) {
             <UserMenu perfilHref={perfilHref} />
           </div>
         </div>
+        {children}
       </div>
     </header>
   );
