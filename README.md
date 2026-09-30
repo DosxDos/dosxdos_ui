@@ -37,6 +37,7 @@ subdominios— está `ARQUITECTURA.md`, en la raíz de cualquiera de los módulo
 | `AppsMenu` | El menú de aplicaciones. Se pinta con lo que sirve `/api/modules`. |
 | `UserMenu` | La cuenta: nombre, perfil y cerrar sesión. |
 | `Footer` | La firma y los enlaces legales. |
+| `AvisoLegalContent` / `PoliticaPrivacidadContent` | El texto de las páginas legales, igual en todas las aplicaciones. Cada una lo mete en su propia página. |
 | `LinkProvider` | Le da al paquete el enlace de la aplicación para sus páginas internas. Sin él, un `<a>` normal. |
 | `@dosxdos/ui/next` → `TransitionLink` | Solo Next: el enlace con el router de Next. Se le pasa a `LinkProvider`. |
 | `Icons` | Los iconos del proyecto. Cambiar de librería es tocar un fichero. |

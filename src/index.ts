@@ -45,6 +45,12 @@ export {
 } from "./utils/categories";
 export type { AppGroup } from "./utils/categories";
 export { LEGAL_LINKS } from "./constants/legal";
+
+// Las paginas legales: el texto, igual en todas; el marco lo pone cada aplicacion
+export { AvisoLegalContent } from "./legal/AvisoLegalContent";
+export { PoliticaPrivacidadContent } from "./legal/PoliticaPrivacidadContent";
+export { LegalSection } from "./legal/LegalSection";
+export { LEGAL_COMPANY, LEGAL_UPDATED_AT } from "./legal/constants";
 export { todayLabel } from "./utils/fecha";
 export {
   DEFAULT_CATEGORY,
