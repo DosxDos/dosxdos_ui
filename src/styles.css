@@ -31,6 +31,7 @@
   --color-paper: #ffffff;
   --color-ink: #281528;
   --color-activo: #10b981;
+  --color-hielo: #d1d5db;
 }
 
 /* --- Texto ----------------------------------------------------------------
@@ -81,4 +82,25 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+
+/* --- Lo que usa la cabecera ------------------------------------------------
+   Con especificidad cero (`:where`): si la aplicacion ya los define, ganan los
+   suyos. Estan aqui porque alguna aplicacion Vite no tenia alguno, y la
+   cabecera salia sin capa (tapada por la pagina) o con el titulo sin estilo. */
+
+:where(.title-section) {
+  font-family: var(--font-display, inherit);
+  font-size: var(--text-2xl, 1.5rem);
+  font-weight: var(--font-weight-bold, 700);
+  line-height: 1.1;
+}
+
+:where(.z-drawer) {
+  z-index: var(--z-drawer, 50);
+}
+
+:where(.z-dropdown) {
+  z-index: var(--z-dropdown, 60);
 }

@@ -44,7 +44,7 @@ subdominios— está `ARQUITECTURA.md`, en la raíz de cualquiera de los módulo
 | `ModuleIcon` / `RemoteIcon` | El icono de un módulo, que llega como SVG desde la base de datos. |
 | `SessionProvider` / `useSession` | Quién eres. Lee el token y redirige si no hay. |
 | `ModulesProvider` / `useModules` | El catálogo de aplicaciones, pedido una sola vez. |
-| `utils/auth/*` | Leer, guardar y descodificar el token. |
+| `utils/auth/*` | Leer, guardar y descodificar el token. `configureTokenStore(localStorageStore("clave") \| sessionStorageStore(...) \| cookieStore(...))` al arrancar, si la aplicación guarda su token en otro sitio. |
 
 Todo se importa de `"@dosxdos/ui"`, **nunca** de una ruta interna: así se puede
 mover un fichero aquí dentro sin romper a nadie.

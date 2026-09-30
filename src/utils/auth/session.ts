@@ -15,7 +15,82 @@ import { toAuthenticatedUser, decodeToken, isExpired } from "./jwt";
  * caducado en cuanto lo lee. Para salir de verdad esta el boton de cerrar
  * sesion, que llama a `clearToken()`.
  */
-const STORAGE_KEY = "dxd_token";
+/** Donde se guarda el token. Cada aplicacion puede tener el suyo: ver `configureTokenStore`. */
+export interface TokenStore {
+  read(): string | null;
+  write(token: string): void;
+  clear(): void;
+}
+
+function webStorage(kind: "localStorage" | "sessionStorage", key: string): TokenStore {
+  return {
+    read() {
+      try {
+        return window[kind].getItem(key);
+      } catch {
+        return null;
+      }
+    },
+    write(token) {
+      try {
+        window[kind].setItem(key, token);
+      } catch {
+        // La navegacion privada puede rechazar la escritura. Se sigue: el token
+        // vive en memoria durante esta carga y la persona puede trabajar.
+      }
+    },
+    clear() {
+      try {
+        window[kind].removeItem(key);
+      } catch {
+        // nada que hacer
+      }
+    },
+  };
+}
+
+/** El token en localStorage, con esa clave. Lo normal. */
+export function localStorageStore(key: string): TokenStore {
+  return webStorage("localStorage", key);
+}
+
+/** El token en sessionStorage: muere al cerrar la pestaña. */
+export function sessionStorageStore(key: string): TokenStore {
+  return webStorage("sessionStorage", key);
+}
+
+/** El token en una cookie de la pagina (no httpOnly: la lee el navegador). */
+export function cookieStore(name: string, days = 1): TokenStore {
+  return {
+    read() {
+      if (typeof document === "undefined") return null;
+      const found = document.cookie.split("; ").find((part) => part.startsWith(`${name}=`));
+      return found ? decodeURIComponent(found.slice(name.length + 1)) : null;
+    },
+    write(token) {
+      const secure = window.location.protocol === "https:" ? "; secure" : "";
+      document.cookie = `${name}=${encodeURIComponent(token)}; path=/; max-age=${days * 86400}; samesite=lax${secure}`;
+    },
+    clear() {
+      document.cookie = `${name}=; path=/; max-age=0`;
+    },
+  };
+}
+
+let store: TokenStore = localStorageStore("dxd_token");
+
+/**
+ * Dice donde guarda ESTA aplicacion su token. Se llama una vez, al arrancar,
+ * antes de pintar nada (en `main.jsx` de una aplicacion Vite).
+ *
+ * Existe porque cada aplicacion antigua ya tiene el suyo —una clave propia en
+ * localStorage, una cookie, sessionStorage— y sus llamadas a la API lo leen de
+ * ahi. Si el paquete guardara el suyo aparte, la cabecera sabria quien eres y
+ * la API no. Sin llamarla: localStorage, clave `dxd_token`.
+ */
+export function configureTokenStore(next: TokenStore): void {
+  store = next;
+}
 
 /**
  * Lee el token que trae el fragmento de la URL y lo guarda.
@@ -44,28 +119,15 @@ export function consumeTokenFromUrl(): string | null {
 }
 
 export function storeToken(token: string): void {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, token);
-  } catch {
-    // La navegacion privada puede rechazar la escritura. Se sigue: el token
-    // vive en memoria durante esta carga y la persona puede trabajar.
-  }
+  store.write(token);
 }
 
 export function readToken(): string | null {
-  try {
-    return window.localStorage.getItem(STORAGE_KEY);
-  } catch {
-    return null;
-  }
+  return store.read();
 }
 
 export function clearToken(): void {
-  try {
-    window.localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // nada que hacer
-  }
+  store.clear();
 }
 
 /**

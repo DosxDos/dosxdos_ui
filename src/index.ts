@@ -32,7 +32,12 @@ export {
   clearToken,
   currentUser,
   withSessionToken,
+  configureTokenStore,
+  localStorageStore,
+  sessionStorageStore,
+  cookieStore,
 } from "./utils/auth/session";
+export type { TokenStore } from "./utils/auth/session";
 export { decodeToken, toAuthenticatedUser, isExpired } from "./utils/auth/jwt";
 
 // Ayudas de presentacion
