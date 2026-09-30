@@ -33,6 +33,7 @@ subdominios— está `ARQUITECTURA.md`, en la raíz de cualquiera de los módulo
 
 | Pieza | Qué es |
 |---|---|
+| `AppHeader` | La barra superior entera: logotipo, nombre de la aplicación, fecha, menú y cuenta. `appName`, `perfilHref` y, fuera del portal, `portalUrl`. |
 | `AppsMenu` | El menú de aplicaciones. Se pinta con lo que sirve `/api/modules`. |
 | `UserMenu` | La cuenta: nombre, perfil y cerrar sesión. |
 | `Footer` | La firma y los enlaces legales. |

@@ -6,6 +6,7 @@
  */
 
 // La cabecera compartida
+export { AppHeader } from "./components/AppHeader";
 export { AppsMenu } from "./components/AppsMenu";
 export { UserMenu } from "./components/UserMenu";
 export { Footer } from "./components/Footer";
@@ -43,6 +44,7 @@ export {
 } from "./utils/categories";
 export type { AppGroup } from "./utils/categories";
 export { LEGAL_LINKS } from "./constants/legal";
+export { todayLabel } from "./utils/fecha";
 export {
   DEFAULT_CATEGORY,
   CATEGORY_LABELS,
