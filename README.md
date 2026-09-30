@@ -36,7 +36,7 @@ subdominios— está `ARQUITECTURA.md`, en la raíz de cualquiera de los módulo
 | `AppHeader` | La barra superior entera: logotipo, nombre de la aplicación, fecha, menú y cuenta. `appName`, `perfilHref` y, fuera del portal, `portalUrl`. |
 | `AppsMenu` | El menú de aplicaciones. Se pinta con lo que sirve `/api/modules`. |
 | `UserMenu` | La cuenta: nombre, perfil y cerrar sesión. |
-| `Footer` | La firma y los enlaces legales. |
+| `Footer` | La firma y los enlaces legales. Con `legalBaseUrl` (la dirección del portal) enlaza a las páginas legales del portal, para las aplicaciones que no tienen las suyas. |
 | `AvisoLegalContent` / `PoliticaPrivacidadContent` | El texto de las páginas legales, igual en todas las aplicaciones. Cada una lo mete en su propia página. |
 | `LinkProvider` | Le da al paquete el enlace de la aplicación para sus páginas internas. Sin él, un `<a>` normal. |
 | `@dosxdos/ui/next` → `TransitionLink` | Solo Next: el enlace con el router de Next. Se le pasa a `LinkProvider`. |
