@@ -19,7 +19,7 @@ export function Footer({ legalBaseUrl }: Props = {}) {
   const Link = useLinkComponent();
   const base = legalBaseUrl?.replace(/\/+$/, "");
   return (
-    <footer className="border-t border-primary/10 py-6" aria-label="Pie">
+    <footer className="py-6" aria-label="Pie">
       <div className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center justify-between gap-4 px-5 md:px-10 lg:px-16">
         <p className="text-body text-primary/40">Dos por Dos Grupo Imagen</p>
 
