@@ -1,66 +1,35 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { visibleApps } from "../utils/apps";
 import { groupByCategory, shouldLabelGroups } from "../utils/categories";
 import { useSession } from "../hooks/useSession";
 import { useModules } from "../hooks/useModules";
-import { IconClose, IconMenu } from "./Icons";
-import { ModuleIcon } from "./ModuleIcon";
+import { usePanel } from "../hooks/usePanel";
+import { useBodyLock } from "../hooks/useBodyLock";
 import { useLinkComponent } from "../contexts/LinkContext";
 import { withSessionToken } from "../utils/auth/session";
+import { ModuleIcon } from "./ModuleIcon";
+import { MenuToggle } from "./MenuToggle";
 
 /**
- * El menu de aplicaciones que abre la hamburguesa de la barra.
+ * El menu de aplicaciones que abre el boton de la barra.
  *
- * Panel ancho por debajo de la barra, con las aplicaciones en rejilla: icono en
- * un cuadro redondeado y el nombre al lado. Es el mismo menu que llevaran los
- * demas micro servicios, para que saltar de uno a otro sea siempre igual.
+ * En escritorio, un panel ancho bajo el boton con las aplicaciones en
+ * baldosas: el icono grande y el nombre debajo, agrupadas por categoria. En
+ * movil no cabe un panel flotante: es una hoja que sube desde abajo, a
+ * pantalla casi completa, con el fondo oscurecido.
  *
- * Se cierra al pulsar fuera, con Escape, y al elegir una aplicacion. Sin lo
- * primero se queda abierto tapando la pagina; sin Escape no hay forma de
- * cerrarlo con el teclado.
+ * Entra y sale con animacion (styles.css: `dxd-pop`, `dxd-sheet`), y las
+ * baldosas llegan en cascada. Se cierra al pulsar fuera, con Escape y al
+ * elegir una aplicacion.
  */
 export function AppsMenu() {
   const Link = useLinkComponent();
   const { user } = useSession();
   const { modules } = useModules();
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const onPointerDown = (event: PointerEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setIsOpen(false);
-      // El foco vuelve al boton: si se queda dentro de un panel que ya no
-      // existe, quien navega con teclado se pierde.
-      triggerRef.current?.focus();
-    };
-
-    // Se engancha en el frame siguiente. En una pantalla tactil el
-    // `pointerdown` del MISMO toque que abre el menu llega despues de que este
-    // efecto se monte, ve el objetivo fuera del panel y lo cierra al instante:
-    // el menu parecia no abrirse nunca.
-    const enganchar = requestAnimationFrame(() => {
-      document.addEventListener("pointerdown", onPointerDown);
-    });
-    document.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      cancelAnimationFrame(enganchar);
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [isOpen]);
+  const panel = usePanel<HTMLDivElement, HTMLButtonElement>();
+  // Solo en movil hace falta bloquear la pagina: la hoja la tapa entera.
+  useBodyLock(panel.isOpen && typeof window !== "undefined" && window.innerWidth < 768);
 
   if (!user) return null;
 
@@ -68,101 +37,107 @@ export function AppsMenu() {
   const withLabels = shouldLabelGroups(groups);
 
   return (
-    <div ref={containerRef} className="relative">
-      <button
-        ref={triggerRef}
-        type="button"
-        onClick={() => setIsOpen((open) => !open)}
-        aria-expanded={isOpen}
+    <div ref={panel.containerRef} className="md:relative">
+      <MenuToggle
+        ref={panel.triggerRef}
+        open={panel.isOpen}
+        onClick={panel.toggle}
+        aria-expanded={panel.isOpen}
         aria-controls="apps-menu"
-        aria-label={isOpen ? "Cerrar el menú" : "Abrir el menú de aplicaciones"}
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary/10 text-secondary transition-colors hover:bg-secondary/20 keyboard-focus-ring-inverse md:h-11 md:w-11"
-      >
-        {isOpen ? (
-          <IconClose className="h-5 w-5" />
-        ) : (
-          <IconMenu className="h-5 w-5" />
-        )}
-      </button>
+        aria-label={panel.isOpen ? "Cerrar el menú" : "Abrir el menú de aplicaciones"}
+      />
 
-      {isOpen && (
-        <div
-          id="apps-menu"
-          // En movil se ancla a la pantalla por DEBAJO de la barra, con una
-          // medida fija: `top-[calc(100%+…)]` sobre un elemento `fixed` mide
-          // contra el alto de la ventana, no contra el boton, asi que el panel
-          // caia fuera de la pantalla y parecia que no se abria.
-          className="fixed inset-x-4 top-[4.75rem] z-dropdown max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl border border-primary/10 bg-white p-4 shadow-xl md:absolute md:inset-x-auto md:right-0 md:top-[calc(100%+1rem)] md:max-h-none md:w-[min(90vw,56rem)] md:p-6"
-          data-lenis-prevent
-        >
-          <div className="flex flex-col gap-5">
-            {groups.map((group) => (
-              <section key={group.key} aria-labelledby={`menu-${group.key}`}>
-                <h3
-                  id={`menu-${group.key}`}
-                  className={
-                    withLabels
-                      ? "px-3 pb-2 text-label text-primary/50"
-                      : "sr-only"
-                  }
-                >
-                  {group.label}
-                </h3>
+      {panel.isMounted && (
+        <>
+          {/* El fondo oscurecido, solo en movil: en escritorio el panel es un
+              desplegable y la pagina sigue a la vista. */}
+          <div
+            aria-hidden="true"
+            data-closing={panel.isClosing ? "" : undefined}
+            className="dxd-scrim fixed inset-0 z-dropdown bg-primary/50 backdrop-blur-[2px] md:hidden"
+          />
+          <div
+            id="apps-menu"
+            role="dialog"
+            aria-label="Aplicaciones"
+            data-closing={panel.isClosing ? "" : undefined}
+            data-lenis-prevent
+            className="dxd-sheet fixed inset-x-0 bottom-0 z-dropdown flex max-h-[88dvh] flex-col rounded-t-2xl bg-white shadow-2xl md:dxd-pop md:absolute md:inset-x-auto md:bottom-auto md:right-0 md:top-[calc(100%+0.75rem)] md:max-h-none md:w-[min(92vw,58rem)] md:origin-top-right md:rounded-xl md:shadow-[0_24px_60px_-20px_rgba(40,21,40,0.45)] md:ring-1 md:ring-primary/8"
+          >
+            {/* El asa de la hoja, solo en movil: dice "esto se puede cerrar". */}
+            <div className="flex items-center justify-between px-5 pb-1 pt-3 md:hidden">
+              <span aria-hidden="true" className="mx-auto h-1.5 w-12 rounded-full bg-primary/15" />
+            </div>
+            <div className="flex items-center justify-between px-5 pb-2 md:hidden">
+              <p className="title-section text-primary">Aplicaciones</p>
+              <button
+                type="button"
+                onClick={() => panel.close(true)}
+                aria-label="Cerrar"
+                className="dxd-control flex h-10 w-10 items-center justify-center rounded-full bg-primary/6 text-primary keyboard-focus-ring"
+              >
+                <span aria-hidden="true" className="dxd-burger" data-open="">
+                  <span />
+                  <span />
+                  <span />
+                </span>
+              </button>
+            </div>
 
-                <ul className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-                  {group.apps.map((app) => {
-                    // Un modulo que todavia no existe se pinta apagado y sin
-                    // enlace, igual que en el portal. Aqui era un enlace normal
-                    // y llevaba a un dominio que no responde.
-                    if (app.comingSoon) {
+            <div className="dxd-stagger flex flex-col gap-6 overflow-y-auto px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 md:p-6">
+              {groups.map((group) => (
+                <section key={group.key} aria-labelledby={`menu-${group.key}`} className="flex flex-col gap-3">
+                  <h3 id={`menu-${group.key}`} className={withLabels ? "px-1 text-label text-primary/45" : "sr-only"}>
+                    {group.label}
+                  </h3>
+
+                  <ul className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3 lg:grid-cols-4">
+                    {group.apps.map((app) => {
+                      if (app.comingSoon) {
+                        return (
+                          <li key={app.id}>
+                            <div
+                              aria-label={`${app.name}, próximamente`}
+                              className="flex h-full flex-col items-start gap-3 rounded-xl border border-dashed border-primary/15 p-4 opacity-60"
+                            >
+                              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/5">
+                                <ModuleIcon app={app} className="h-5 w-5 text-primary/60" />
+                              </span>
+                              <span className="flex min-w-0 flex-col">
+                                <span className="truncate text-body font-semibold text-primary/70">{app.name}</span>
+                                <span className="text-body-sm text-primary/45">Próximamente</span>
+                              </span>
+                            </div>
+                          </li>
+                        );
+                      }
+
                       return (
                         <li key={app.id}>
-                          <div
-                            className="flex items-center gap-4 rounded-xl p-3 opacity-45"
-                            aria-label={`${app.name}, próximamente`}
+                          <Link
+                            href={withSessionToken(app.url)}
+                            onClick={() => panel.close()}
+                            className="dxd-tile group flex h-full flex-col items-start gap-3 rounded-xl bg-primary/4 p-4 text-left keyboard-focus-ring"
                           >
-                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/5">
-                              <ModuleIcon app={app} className="h-5 w-5 text-primary" />
+                            <span className="dxd-tile-icon flex h-11 w-11 items-center justify-center rounded-lg bg-white text-primary shadow-sm">
+                              <ModuleIcon app={app} className="h-5 w-5" />
                             </span>
-                            {/* "Pronto" DEBAJO del nombre, no al final de la
-                                fila: alineado a la derecha caia en el hueco
-                                entre columnas de la rejilla y se leia como un
-                                modulo mas, no como una etiqueta de Logistica. */}
                             <span className="flex min-w-0 flex-col">
-                              <span className="truncate text-body font-medium text-primary">
-                                {app.name}
-                              </span>
-                              <span className="text-body text-primary/50">
-                                Próximamente
-                              </span>
+                              <span className="truncate text-body font-semibold text-primary">{app.name}</span>
+                              {app.description && (
+                                <span className="line-clamp-2 text-body-sm leading-snug text-primary/55">{app.description}</span>
+                              )}
                             </span>
-                          </div>
+                          </Link>
                         </li>
                       );
-                    }
-
-                    return (
-                      <li key={app.id}>
-                        <Link
-                          href={withSessionToken(app.url)}
-                          onClick={() => setIsOpen(false)}
-                          className="flex items-center gap-4 rounded-xl p-3 transition-colors hover:bg-primary/5 keyboard-focus-ring"
-                        >
-                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/5">
-                            <ModuleIcon app={app} className="h-5 w-5 text-primary" />
-                          </span>
-                          <span className="min-w-0 truncate text-body font-medium text-primary">
-                            {app.name}
-                          </span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
-            ))}
+                    })}
+                  </ul>
+                </section>
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

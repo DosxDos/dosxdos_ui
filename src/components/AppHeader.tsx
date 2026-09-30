@@ -65,7 +65,7 @@ function AppHeaderBase({ appName, perfilHref, portalUrl, children }: Props) {
   const portal = portalUrl ? withSessionToken(portalUrl) : null;
 
   return (
-    <header className="sticky top-0 z-drawer border-b border-hielo/30 bg-primary" aria-label={`Cabecera de ${appName}`}>
+    <header className="dxd-header sticky top-0 z-drawer bg-primary" aria-label={`Cabecera de ${appName}`}>
       <div className="px-5 py-3.5 md:px-8 md:py-5 lg:px-16 lg:py-7">
         <div className="flex items-center justify-between gap-3 md:gap-4">
           <div className="flex min-w-0 items-center gap-3 md:gap-4 lg:gap-6">
@@ -75,7 +75,7 @@ function AppHeaderBase({ appName, perfilHref, portalUrl, children }: Props) {
               <a
                 href={portal}
                 aria-label="Volver al portal"
-                className="flex shrink-0 items-center rounded-md transition-opacity duration-200 hover:opacity-75 keyboard-focus-ring"
+                className="dxd-logo flex shrink-0 items-center rounded-md keyboard-focus-ring-inverse"
               >
                 {logo}
               </a>
@@ -99,9 +99,9 @@ function AppHeaderBase({ appName, perfilHref, portalUrl, children }: Props) {
             {portal && (
               <a
                 href={portal}
-                className="hidden shrink-0 items-center gap-2 rounded-full border border-secondary/20 py-2 pl-3 pr-4 text-body font-medium text-secondary transition-colors duration-200 hover:border-secondary/40 hover:bg-secondary/10 keyboard-focus-ring md:inline-flex"
+                className="dxd-control dxd-ghost hidden shrink-0 items-center gap-2 rounded-full border border-secondary/20 py-2 pl-3 pr-4 text-body font-medium text-secondary keyboard-focus-ring-inverse md:inline-flex"
               >
-                <IconBack className="h-4 w-4 shrink-0" />
+                <IconBack className="dxd-back h-4 w-4 shrink-0" />
                 Portal
               </a>
             )}
