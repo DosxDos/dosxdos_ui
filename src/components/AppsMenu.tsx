@@ -14,8 +14,11 @@ import { MenuToggle } from "./MenuToggle";
 /**
  * El menu de aplicaciones que abre el boton de la barra.
  *
- * En escritorio, un panel ancho bajo el boton con las aplicaciones en
- * baldosas: el icono grande y el nombre debajo, agrupadas por categoria. En
+ * En escritorio, un panel bajo el boton con las aplicaciones en filas ligeras
+ * (icono pequeño, nombre y una linea de descripcion), agrupadas por categoria
+ * y en tres columnas. Antes eran baldosas rellenas con la descripcion en dos
+ * lineas: pesaban, y con catorce aplicaciones el panel se salia de la
+ * pantalla. Ahora tiene alto maximo y se desplaza por dentro. En
  * movil no cabe un panel flotante: es una hoja que sube desde abajo, a
  * pantalla casi completa, con el fondo oscurecido.
  *
@@ -62,7 +65,7 @@ export function AppsMenu() {
             aria-label="Aplicaciones"
             data-closing={panel.isClosing ? "" : undefined}
             data-lenis-prevent
-            className="dxd-sheet fixed inset-x-0 bottom-0 z-dropdown flex max-h-[88dvh] flex-col rounded-t-2xl bg-white shadow-2xl md:dxd-pop md:absolute md:inset-x-auto md:bottom-auto md:right-0 md:top-[calc(100%+0.75rem)] md:max-h-none md:w-[min(92vw,58rem)] md:origin-top-right md:rounded-xl md:shadow-[0_24px_60px_-20px_rgba(40,21,40,0.45)] md:ring-1 md:ring-primary/8"
+            className="dxd-sheet fixed inset-x-0 bottom-0 z-dropdown flex max-h-[88dvh] flex-col rounded-t-2xl bg-white shadow-2xl md:dxd-pop md:absolute md:inset-x-auto md:bottom-auto md:right-0 md:top-[calc(100%+0.75rem)] md:max-h-[calc(100dvh-9rem)] md:w-[min(92vw,54rem)] md:origin-top-right md:rounded-xl md:shadow-[0_24px_60px_-20px_rgba(40,21,40,0.45)] md:ring-1 md:ring-primary/8"
           >
             {/* El asa de la hoja, solo en movil: dice "esto se puede cerrar". */}
             <div className="flex items-center justify-between px-5 pb-1 pt-3 md:hidden">
@@ -84,28 +87,28 @@ export function AppsMenu() {
               </button>
             </div>
 
-            <div className="dxd-stagger flex flex-col gap-6 overflow-y-auto px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 md:p-6">
+            <div className="dxd-stagger flex min-h-0 flex-col gap-5 overflow-y-auto px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 md:p-4">
               {groups.map((group) => (
-                <section key={group.key} aria-labelledby={`menu-${group.key}`} className="flex flex-col gap-3">
-                  <h3 id={`menu-${group.key}`} className={withLabels ? "px-1 text-label text-primary/45" : "sr-only"}>
+                <section key={group.key} aria-labelledby={`menu-${group.key}`} className="flex flex-col gap-1.5">
+                  <h3 id={`menu-${group.key}`} className={withLabels ? "px-3 pt-1 text-label text-primary/45" : "sr-only"}>
                     {group.label}
                   </h3>
 
-                  <ul className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3 lg:grid-cols-4">
+                  <ul className="grid grid-cols-1 gap-0.5 md:grid-cols-2 lg:grid-cols-3">
                     {group.apps.map((app) => {
                       if (app.comingSoon) {
                         return (
                           <li key={app.id}>
                             <div
                               aria-label={`${app.name}, próximamente`}
-                              className="flex h-full flex-col items-start gap-3 rounded-xl border border-dashed border-primary/15 p-4 opacity-60"
+                              className="flex h-full items-center gap-3 rounded-lg p-3 opacity-55"
                             >
-                              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/5">
-                                <ModuleIcon app={app} className="h-5 w-5 text-primary/60" />
+                              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/5">
+                                <ModuleIcon app={app} className="h-[1.1rem] w-[1.1rem] text-primary/60" />
                               </span>
                               <span className="flex min-w-0 flex-col">
-                                <span className="truncate text-body font-semibold text-primary/70">{app.name}</span>
-                                <span className="text-body-sm text-primary/45">Próximamente</span>
+                                <span className="truncate text-body font-medium text-primary/70">{app.name}</span>
+                                <span className="truncate text-body-sm text-primary/45">Próximamente</span>
                               </span>
                             </div>
                           </li>
@@ -117,15 +120,15 @@ export function AppsMenu() {
                           <Link
                             href={withSessionToken(app.url)}
                             onClick={() => panel.close()}
-                            className="dxd-tile group flex h-full flex-col items-start gap-3 rounded-xl bg-primary/4 p-4 text-left keyboard-focus-ring"
+                            className="dxd-tile group flex h-full items-center gap-3 rounded-lg p-3 text-left keyboard-focus-ring"
                           >
-                            <span className="dxd-tile-icon flex h-11 w-11 items-center justify-center rounded-lg bg-white text-primary shadow-sm">
-                              <ModuleIcon app={app} className="h-5 w-5" />
+                            <span className="dxd-tile-icon flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/5 text-primary">
+                              <ModuleIcon app={app} className="h-[1.1rem] w-[1.1rem]" />
                             </span>
                             <span className="flex min-w-0 flex-col">
-                              <span className="truncate text-body font-semibold text-primary">{app.name}</span>
+                              <span className="truncate text-body font-medium text-primary">{app.name}</span>
                               {app.description && (
-                                <span className="line-clamp-2 text-body-sm leading-snug text-primary/55">{app.description}</span>
+                                <span className="truncate text-body-sm text-primary/50">{app.description}</span>
                               )}
                             </span>
                           </Link>

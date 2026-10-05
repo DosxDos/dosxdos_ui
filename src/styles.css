@@ -216,11 +216,11 @@
 @keyframes dxd-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 /* Las baldosas de las aplicaciones. */
-.dxd-tile { transition: background-color 200ms ease, transform 300ms var(--dxd-ease), box-shadow 300ms var(--dxd-ease); }
-.dxd-tile:hover { background-color: color-mix(in srgb, var(--color-primary, #281528) 8%, transparent); transform: translateY(-2px); box-shadow: 0 14px 30px -18px rgba(40, 21, 40, 0.5); }
-.dxd-tile:active { transform: translateY(0) scale(0.985); transition-duration: 90ms; }
-.dxd-tile-icon { transition: transform 300ms var(--dxd-ease-out), background-color 200ms ease, color 200ms ease; }
-.dxd-tile:hover .dxd-tile-icon { transform: scale(1.08) rotate(-3deg); background-color: var(--color-primary, #281528); color: var(--color-secondary, #e8edec); }
+.dxd-tile { transition: background-color 200ms ease; }
+.dxd-tile:hover { background-color: color-mix(in srgb, var(--color-primary, #281528) 5%, transparent); }
+.dxd-tile:active { background-color: color-mix(in srgb, var(--color-primary, #281528) 8%, transparent); }
+.dxd-tile-icon { transition: background-color 200ms ease, color 200ms ease; }
+.dxd-tile:hover .dxd-tile-icon { background-color: var(--color-primary, #281528); color: var(--color-secondary, #e8edec); }
 
 /* Las filas del menu de la cuenta. */
 .dxd-row { transition: background-color 180ms ease, transform 220ms var(--dxd-ease); }
@@ -242,3 +242,9 @@
 }
 .dxd-footer-link:hover::after, .dxd-footer-link:focus-visible::after { transform: scaleX(1); }
 @media (prefers-reduced-motion: reduce) { .dxd-footer-link::after { transition: none; } }
+/* El credito del pie: la marca se oscurece y abre el espaciado al pasar. */
+.dxd-credit-mark { transition: color 220ms ease, letter-spacing 420ms var(--dxd-ease); }
+.dxd-credit:hover .dxd-credit-mark, .dxd-credit:focus-visible .dxd-credit-mark {
+  color: var(--color-primary, #281528); letter-spacing: 0.24em;
+}
+@media (prefers-reduced-motion: reduce) { .dxd-credit-mark { transition: color 220ms ease; } }
