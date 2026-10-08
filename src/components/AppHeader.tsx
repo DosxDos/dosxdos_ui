@@ -25,6 +25,13 @@ interface Props {
    * logotipo y DENTRO de la barra, para que se quede fija con ella.
    */
   children?: ReactNode;
+  /**
+   * La direccion del modulo de incidencias. Opcional: sin ella no aparece el
+   * boton "Reportar incidencia" y la cabecera queda como siempre. Ver UserMenu.
+   */
+  incidenciasUrl?: string;
+  /** El id de esta aplicacion en el catalogo del portal (Portal > Modulos). */
+  appId?: string;
 }
 
 /**
@@ -40,7 +47,7 @@ interface Props {
  *
  * Los logotipos se leen de /assets/img/logos/ de cada aplicacion.
  */
-function AppHeaderBase({ appName, perfilHref, portalUrl, children }: Props) {
+function AppHeaderBase({ appName, perfilHref, portalUrl, children, incidenciasUrl, appId }: Props) {
   const { user } = useSession();
   if (!user) return null;
 
@@ -106,7 +113,7 @@ function AppHeaderBase({ appName, perfilHref, portalUrl, children }: Props) {
               </a>
             )}
             <AppsMenu />
-            <UserMenu perfilHref={perfilHref} />
+            <UserMenu perfilHref={perfilHref} incidenciasUrl={incidenciasUrl} appId={appId} appNombre={appName} />
           </div>
         </div>
         {children}

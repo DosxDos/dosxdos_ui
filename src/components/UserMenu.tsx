@@ -3,7 +3,8 @@
 import { useSession } from "../hooks/useSession";
 import { usePanel } from "../hooks/usePanel";
 import { displayName, initials } from "../utils/apps";
-import { IconChevronDown, IconLogout, IconUser } from "./Icons";
+import { IconChevronDown, IconFlag, IconLogout, IconUser } from "./Icons";
+import { enlaceDeIncidencia } from "../utils/incidencias";
 import { EnlacePerfil } from "./EnlacePerfil";
 
 /**
@@ -13,12 +14,22 @@ import { EnlacePerfil } from "./EnlacePerfil";
  * Entra y sale con animacion (styles.css: `dxd-pop`), y las iniciales llevan
  * un halo que se enciende al pasar por encima.
  */
-export function UserMenu({ perfilHref }: {
+export function UserMenu({ perfilHref, incidenciasUrl, appId, appNombre }: {
   /**
    * A donde lleva "Mi perfil". En el portal es una ruta suya (`/perfil`); desde
    * otro modulo, la URL absoluta del portal CON el token.
    */
   perfilHref: string;
+  /**
+   * La direccion del modulo de incidencias. OPCIONAL a proposito: sin ella el
+   * menu queda exactamente como antes, asi que una aplicacion que actualice el
+   * paquete por otro motivo no cambia. Con ella aparece "Reportar incidencia".
+   */
+  incidenciasUrl?: string;
+  /** El id de esta aplicacion en el catalogo del portal, para la incidencia. */
+  appId?: string;
+  /** Su nombre, por si el modulo de incidencias no encuentra el id. */
+  appNombre?: string;
 }) {
   const { user, signOut } = useSession();
   const panel = usePanel<HTMLDivElement, HTMLButtonElement>();
@@ -74,6 +85,22 @@ export function UserMenu({ perfilHref }: {
               <IconUser className="h-4 w-4 shrink-0 text-primary/60" />
               Mi perfil
             </EnlacePerfil>
+
+            {incidenciasUrl && (
+              <button
+                type="button"
+                onClick={() => {
+                  panel.close();
+                  // El enlace se construye AL PULSAR, no al pintar: asi lleva
+                  // la pantalla en la que se esta de verdad.
+                  window.open(enlaceDeIncidencia(incidenciasUrl, appId, appNombre), "_blank", "noopener");
+                }}
+                className="dxd-row flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-body text-primary keyboard-focus-ring"
+              >
+                <IconFlag className="h-4 w-4 shrink-0 text-primary/60" />
+                Reportar incidencia
+              </button>
+            )}
 
             <button
               type="button"

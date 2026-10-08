@@ -42,6 +42,7 @@ export { decodeToken, toAuthenticatedUser, isExpired } from "./utils/auth/jwt";
 
 // Ayudas de presentacion
 export { visibleApps, displayName, initials } from "./utils/apps";
+export { enlaceDeIncidencia } from "./utils/incidencias";
 export {
   groupByCategory,
   shouldLabelGroups,

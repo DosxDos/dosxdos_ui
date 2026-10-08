@@ -24,6 +24,7 @@ import {
   FiUser,
   FiX,
   FiStar,
+  FiFlag,
 } from "react-icons/fi";
 import type { IconBaseProps } from "react-icons";
 
@@ -49,6 +50,7 @@ export const IconChevronRight = (props: IconProps) => <FiChevronRight aria-hidde
 export const IconUser = (props: IconProps) => <FiUser aria-hidden="true" {...props} />;
 export const IconClose = (props: IconProps) => <FiX aria-hidden="true" {...props} />;
 export const IconStar = (props: IconProps) => <FiStar aria-hidden="true" {...props} />;
+export const IconFlag = (props: IconProps) => <FiFlag aria-hidden="true" {...props} />;
 
 // Iconos de las aplicaciones del portal y de la cabecera.
 export const IconClock = (props: IconProps) => <FiClock aria-hidden="true" {...props} />;
